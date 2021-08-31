@@ -1,0 +1,48 @@
+image: artifactory.coretechs.ru/docker/docker-builder:node14_pnpm6
+
+stages:
+  - stage-1
+  - stage-2
+
+# stage-1
+
+install:
+  script:
+    - make install
+  artifacts:
+    paths:
+      - ./node_modules
+    expire_in: 1 hour
+  stage: stage-1
+  tags:
+    - docker-builder
+
+# stage-2
+
+build:
+  script:
+    - make build
+  dependencies:
+    - install
+  stage: stage-2
+  tags:
+    - docker-builder
+
+prettier-stylelint:
+  script:
+    - make prettier
+    - make stylelint
+  dependencies:
+    - install
+  stage: stage-2
+  tags:
+    - docker-builder
+
+eslint:
+  script:
+    - make eslint
+  dependencies:
+    - install
+  stage: stage-2
+  tags:
+    - docker-builder
